@@ -24,7 +24,7 @@ public class MarkRepository {
 	public Mark getMarkByStudentID(int id) {
 		Mark mark = null;
 		try {
-			mark = jdbcTemplate.queryForObject("select * from Mark where studentid=?", new Object[] { id }, mapper);
+			mark = jdbcTemplate.queryForObject(QueryConstants.MARKBYID, new Object[] { id }, mapper);
 		} catch (Exception e) {
 			return null;
 		}

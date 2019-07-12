@@ -15,11 +15,14 @@ import com.student.query.QueryConstants;
 public class StudentRepository {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	@Autowired
+	MarkRepository repo;
 	RowMapper<Student> rowMapper = new BeanPropertyRowMapper<Student>(Student.class);
 
 	public Student addStudent(Student student) {
 		// TODO Auto-generated method stub
-		jdbcTemplate.update(QueryConstants.CREATESTUDENT, student.getFullName(), student.getAge(), student.getGender());
+		jdbcTemplate.update(QueryConstants.CREATESTUDENT, student.getFullName(), student.getAge(), student.getGender(),
+				student.getClass1(), student.getSection());
 		return student;
 	}
 
@@ -30,19 +33,29 @@ public class StudentRepository {
 
 	public Student updateStudent(Student student) {
 		// TODO Auto-generated method stub
-		jdbcTemplate.update(QueryConstants.UPDATESTUDENT, student.getFullName(), student.getAge(), student.getGender(),
-				student.getClass1(), student.getSection(), student.getId());
+		System.err.println("called of update Student");
+		// int i = jdbcTemplate.update(QueryConstants.UPDATESTUDENT,
+		// student.getFullName(), student.getAge(),
+		// student.getGender(), student.getClass1(), student.getSection(),
+		// student.getId());
+		int i = jdbcTemplate.update(
+				"UPDATE Student SET fullname= ? , age= ? , gender = ? ,class = ? , section = ? WHERE id = ? ;",
+				student.getFullName(), student.getAge(), student.getGender(), student.getClass1(), student.getSection(),
+				student.getId());
+		System.err.println(i);
 		return getStudentByID(student.getId());
 	}
 
 	public Student getStudentByID(int id) {
 		// TODO Auto-generated method stub
+
 		Student student = null;
 		try {
 			student = jdbcTemplate.queryForObject(QueryConstants.STUDENT, new Object[] { id }, rowMapper);
 		} catch (Exception e) {
 			return null;
 		}
+		student.setMark(repo.getMarkByStudentID(id));
 		return student;
 	}
 
